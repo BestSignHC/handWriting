@@ -15,8 +15,6 @@ import android.view.View;
  */
 
 public class PaintView extends View{
-    private Resources myResources;
-
     // 画笔，定义绘制属性
     private Paint myPaint;
     private Paint mBitmapPaint;
@@ -71,9 +69,6 @@ public class PaintView extends View{
      */
     private void initialize()
     {
-        // Get a reference to our resource table.
-        myResources = getResources();
-
         // 绘制自由曲线用的画笔
         myPaint = new Paint();
         myPaint.setAntiAlias(true);
