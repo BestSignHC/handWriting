@@ -173,7 +173,7 @@ public class PaintView extends View{
         isTakeSample = false;
         String handWritingPosition = builder.toString().substring(0, builder.toString().length() -2);
         handWritingList.add(handWritingPosition);
-        Log.d("hand", handWritingPosition);
+        Log.d("hand", "touch_up:" + handWritingPosition);
         builder = new StringBuilder();
     }
 

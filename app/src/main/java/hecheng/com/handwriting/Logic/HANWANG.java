@@ -23,7 +23,7 @@ public class HANWANG {
         Object[] handWritingArray = handWritingPositions.toArray();
         for (Object handWriting : handWritingArray) {
             String handWritingString = JSON.toJSONString(handWriting);
-            handWritingString = handWritingString.substring(2, handWritingString.length() - 2);
+            handWritingString = handWritingString.substring(1, handWritingString.length() - 1);
             handWritingPositionsBuilder.append(handWritingString);
             handWritingPositionsBuilder.append(", -1, 0, ");
         }
