@@ -39,16 +39,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 handWritingList = paintView.getHandWritingList();
-                String jsonString = JSON.toJSONString(handWritingList);
-                Log.d("hand", jsonString);
-                JSONArray handWritingPositionsJ = JSONArray.parseArray(jsonString);
-                HANWANG hanwang = new HANWANG();
-                List<String> recResult = hanwang.handWritingRecognize(handWritingPositionsJ);
-                Log.d("hand", JSON.toJSONString(recResult));
+                new Thread(new RecongnizeThread()).start();
             }
         });
-
-
     }
 
+    class RecongnizeThread implements Runnable {
+        @Override
+        public void run() {
+            String jsonString = JSON.toJSONString(handWritingList);
+            Log.d("hand", jsonString);
+            JSONArray handWritingPositionsJ = JSONArray.parseArray(jsonString);
+            HANWANG hanwang = new HANWANG();
+            List<String> recResult = hanwang.handWritingRecognize(handWritingPositionsJ);
+            Log.d("hand", JSON.toJSONString(recResult));
+        }
+    }
 }

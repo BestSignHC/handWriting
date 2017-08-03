@@ -191,7 +191,7 @@ public class PaintView extends View{
         myPath.reset();
         // 刷新绘制
         invalidate();
-
+        handWritingList.clear();
     }
     Handler handler = new Handler() {
         @Override

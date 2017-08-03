@@ -105,7 +105,7 @@ public class HttpUtils {
 
         OutputStream outputStream;
         try {
-git            outputStream = connection.getOutputStream();
+            outputStream = connection.getOutputStream();
         }
         catch (IOException e) {
             throw e;
