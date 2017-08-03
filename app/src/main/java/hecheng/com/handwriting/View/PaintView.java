@@ -6,9 +6,15 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ChengH on 2017/8/2.
@@ -27,23 +33,21 @@ public class PaintView extends View{
     private Canvas myCanvas;
 
     private float mX, mY;
-    boolean isTakeSample = false;
     private static final float TOUCH_TOLERANCE = 4;
 
     // 记录宽度和高度
     private int mWidth;
     private int mHeight;
 
-    public float getmX() {
-        return mX;
-    }
+    private boolean isTakeSample = false;
 
-    public float getmY() {
-        return mY;
-    }
+    List<String> handWritingList = null;
+    StringBuilder builder = null;
 
-    public boolean isTakeSample() {
-        return isTakeSample;
+    Thread timerThread = null;
+
+    public List<String> getHandWritingList() {
+        return handWritingList;
     }
 
     public PaintView(Context context)
@@ -81,7 +85,10 @@ public class PaintView extends View{
         myPath = new Path();
 
         mBitmapPaint = new Paint(Paint.DITHER_FLAG);
-
+        builder = new StringBuilder();
+        handWritingList = new ArrayList<>();
+        timerThread = new Thread(new TimerThead());
+        timerThread.start();
     }
 
     @Override
@@ -103,7 +110,6 @@ public class PaintView extends View{
         switch (event.getAction())
         {
             case MotionEvent.ACTION_DOWN:
-                isTakeSample = true;
                 touch_start(x, y);
                 invalidate();
                 break;
@@ -112,7 +118,6 @@ public class PaintView extends View{
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                isTakeSample = false;
                 touch_up();
                 invalidate();
                 break;
@@ -142,6 +147,7 @@ public class PaintView extends View{
         myPath.moveTo(x, y);
         mX = x;
         mY = y;
+        isTakeSample = true;
     }
 
     private void touch_move(float x, float y)
@@ -164,6 +170,11 @@ public class PaintView extends View{
         myCanvas.drawPath(myPath, myPaint);
         // kill this so we don't double draw
         myPath.reset();
+        isTakeSample = false;
+        String handWritingPosition = builder.toString().substring(0, builder.toString().length() -2);
+        handWritingList.add(handWritingPosition);
+        Log.d("hand", handWritingPosition);
+        builder = new StringBuilder();
     }
 
     /**
@@ -171,6 +182,7 @@ public class PaintView extends View{
      */
     public void clear()
     {
+        isTakeSample = false;
         // 清除方法1：重新生成位图
          myBitmap = Bitmap
          .createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
@@ -181,4 +193,35 @@ public class PaintView extends View{
         invalidate();
 
     }
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 1) {
+                int x = (int) mX;
+                int y = (int) mY;
+                if (isTakeSample) {
+                    builder.append(x + ", " + y + " ,");
+                }
+            }
+        }
+    };
+
+    class TimerThead  implements Runnable{
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Thread.sleep(10);
+                    Message msg = new Message();
+                    msg.what = 1;
+                    handler.sendMessage(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
 }
